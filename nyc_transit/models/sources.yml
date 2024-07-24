@@ -15,8 +15,16 @@ sources:
             data_type: CHARACTER VARYING(256)
           - name: start station latitude
             data_type: CHARACTER VARYING(256)
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: -90.0  # (Optional)
+                  max_value: 90.0 # (Optional)
           - name: start station longitude
             data_type: CHARACTER VARYING(256)
+            tests:
+              - dbt_expectations.expect_column_values_to_be_between:
+                  min_value: -180.0  # (Optional)
+                  max_value: 180.0 # (Optional)
           - name: end station id
             data_type: CHARACTER VARYING(256)
           - name: end station name
@@ -115,9 +123,9 @@ sources:
               - dbt_expectations.expect_column_to_exist
               - relationships:
                   to: source('main','fhv_bases')
-                  field: base_number 
+                  field: base_number       
                   config:
-                    severity: warn             
+                    severity: warn       
           - name: pickup_datetime
             data_type: TIMESTAMP
             description: "The date and time of the trip pick-up"
@@ -151,9 +159,25 @@ sources:
           - name: dispatching_base_num
             data_type: CHARACTER VARYING(256)
             description: "The TLC Base License Number of the base that dispatched the trip"
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_to_exist
+              - relationships:
+                  to: source('main','fhv_bases')
+                  field: base_number       
+                  config:
+                    severity: warn     
           - name: originating_base_num
             description: "base number of the base that received the original trip request"
             data_type: CHARACTER VARYING(256)
+            tests:
+              - not_null
+              - dbt_expectations.expect_column_to_exist
+              - relationships:
+                  to: source('main','fhv_bases')
+                  field: base_number       
+                  config:
+                    severity: warn     
           - name: request_datetime
             description: "date/time when passenger requested to be picked up"
             data_type: TIMESTAMP
